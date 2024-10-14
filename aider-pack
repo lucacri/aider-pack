@@ -494,17 +494,18 @@ show_pack_details() {
 
         display_header "Show Pack Details"
 
-        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE")
+        packs=($(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE"))
+        pack_count=${#packs[@]}
 
         echo -e "${YELLOW}Select a pack to view details:${NC}"
         for i in "${!packs[@]}"; do
             echo "$((i + 1)). ${packs[i]}"
         done
-        echo "$((${#packs[@]} + 1)). Back to main menu"
+        echo "$((pack_count + 1)). Back to main menu"
 
-        read -p "Enter your choice (1-$((${#packs[@]} + 1))): " choice
-        if validate_input "$choice" 1 $((${#packs[@]} + 1)); then
-            if [ "$choice" -eq "$((${#packs[@]} + 1))" ]; then
+        read -p "Enter your choice (1-$((pack_count + 1))): " choice
+        if validate_input "$choice" 1 $((pack_count + 1)); then
+            if [ "$choice" -eq "$((pack_count + 1))" ]; then
                 return
             else
                 display_pack_details "${packs[$((choice - 1))]}"
