@@ -221,10 +221,11 @@ list_and_select_packs() {
 
         display_header "Existing Packs"
         
-        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE")
-        
-        for i in "${!packs[@]}"; do
-            echo "$((i+1)). ${packs[i]}"
+        local packs=()
+        local i=1
+        jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | while read -r pack; do
+            packs+=("$pack")
+            echo "$((i++)). $pack"
         done
         echo "$((${#packs[@]}+1)). Back to main menu"
 
