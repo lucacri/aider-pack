@@ -225,14 +225,17 @@ list_and_select_packs() {
         display_header "Existing Packs"
 
         local packs=()
-        packCount=0
+        local packCount=0
 
         # Read the pack names into the array
-        jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | while read -r pack; do
+        while IFS= read -r pack; do
             packs+=("$pack")
-            echo "$((i++)). $pack"
-            
             ((packCount++))
+        done < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE")
+
+        # Display the packs
+        for i in "${!packs[@]}"; do
+            echo "$((i+1)). ${packs[i]}"
         done
 
         echo -e "\nB. Back to main menu\n"
