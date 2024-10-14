@@ -7,7 +7,12 @@ Welcome to the Aider Pack, a tool designed to streamline the management of confi
 - **Pack Management**: Create, edit, and delete configuration packs.
 - **Model Selection**: Choose from a predefined list of models for your packs.
 - **Environment Variables**: Manage environment variables specific to each pack.
+- **Additional Arguments**: Include additional arguments for the Aider command in each pack.
 - **Interactive Menu**: User-friendly interface for managing packs.
+
+## What is a Pack?
+
+A "pack" is a concept introduced by this tool. It allows you to organize and manage multiple configurations (such as models, weak models, editor models, environment variables, and additional arguments) under a single name. This makes it easier to switch between different sets of settings without having to manually specify each option every time.
 
 ## Installation
 
