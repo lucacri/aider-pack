@@ -33,20 +33,7 @@ sluggify() {
 }
 
 clear_the_screen() {
-    # Get the number of lines (rows) in the terminal
-    local lines=$(tput lines)
-
-    # Move the cursor to the top-left corner of the screen
-    tput cup 0 0
-
-    # Overwrite each line with spaces
-    for ((i = 0; i < lines; i++)); do
-        # Print a line of spaces (overwrites existing content).
-        printf "%${COLUMNS}s\n"
-    done
-
-    # Move the cursor back to the top-left corner again
-    tput cup 0 0
+    printf "\n"
 }
 
 # Function to display a centered header
@@ -237,14 +224,15 @@ list_and_select_packs() {
 
         display_header "Existing Packs"
 
-        # Read the pack names into the array
-        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE")
+        local packs=()
 
-        local i=1
-        for pack in "${packs[@]}"; do
-            echo "$i. $pack"
-            ((i++))
+        # Read the pack names into the array
+        jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | while read -r pack; do
+            packs+=("$pack")
+            echo "$((i++)). $pack"
         done
+
+
         echo "B. Back to main menu"
 
         read -p "Enter your choice (1-${#packs[@]} or B): " choice
