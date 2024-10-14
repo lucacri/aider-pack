@@ -1,6 +1,6 @@
-# Aider Pack Manager
+# Aider Pack
 
-Welcome to the Aider Pack Manager, a tool designed to streamline the management of configuration packs for the Aider application. This script allows you to create, edit, delete, and execute configuration packs with ease.
+Welcome to the Aider Pack, a tool designed to streamline the management of configuration packs for the Aider application. This script allows you to create, edit, delete, and execute configuration packs with ease.
 
 ## Features
 
@@ -11,7 +11,7 @@ Welcome to the Aider Pack Manager, a tool designed to streamline the management 
 
 ## Installation
 
-To get started with the Aider Pack Manager, follow these steps:
+To get started with the Aider Pack, follow these steps:
 
 1. **Clone the Repository**:
 
@@ -58,6 +58,8 @@ To execute a specific pack with additional options:
 ## Configuration
 
 The script uses a JSON file located at `~/.aider-pack.json` to store pack configurations. This file is automatically managed by the script.
+
+
 
 ## Contributing
 
