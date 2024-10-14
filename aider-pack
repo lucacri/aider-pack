@@ -524,17 +524,15 @@ suggest_completion_installation() {
     echo "To enable shell completion, follow these steps:"
     echo
     echo "For Bash:"
-    echo "1. Copy the completion file to the bash completion directory:"
-    echo "   sudo cp aider-pack-completion.bash /etc/bash_completion.d/aider-pack"
-    echo "2. Source the completion file or restart your shell:"
-    echo "   source /etc/bash_completion.d/aider-pack"
+    echo "1. Add the following line to your ~/.bashrc file:"
+    echo '   eval "$(aider-pack --completions bash)"'
+    echo "2. Restart your shell or run:"
+    echo "   source ~/.bashrc"
     echo
     echo "For Zsh:"
-    echo "1. Copy the completion file to the zsh functions directory:"
-    echo "   sudo cp aider-pack-completion.bash /usr/local/share/zsh/site-functions/_aider-pack"
-    echo "2. Add the following line to your ~/.zshrc file:"
-    echo "   autoload -U compinit && compinit"
-    echo "3. Restart your shell or run:"
+    echo "1. Add the following line to your ~/.zshrc file:"
+    echo '   eval "$(aider-pack --completions zsh)"'
+    echo "2. Restart your shell or run:"
     echo "   source ~/.zshrc"
 }
 
@@ -554,6 +552,17 @@ if [ $# -eq 0 ]; then
         fi
     fi
     show_main_menu
+elif [ "$1" == "--completions" ]; then
+    if [ "$2" == "bash" ]; then
+        echo 'complete -W "$(aider-pack --list-packs)" aider-pack'
+    elif [ "$2" == "zsh" ]; then
+        echo 'compdef _aider-pack aider-pack'
+        echo '_aider-pack() { compadd $(aider-pack --list-packs) }'
+    else
+        echo "Invalid shell type. Use 'bash' or 'zsh'."
+        exit 1
+    fi
+    exit 0
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
     show_usage
 else
