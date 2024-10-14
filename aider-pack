@@ -5,7 +5,7 @@
 # ==========================================
 
 # File to store packs
-AIDER_PACKS_CONFIG_FILE="${AIDER_PACKS_CONFIG_FILE:=$HOME/.aider-pack.json}"
+AIDER_PACK_CONFIG_FILE="${AIDER_PACK_CONFIG_FILE:=$HOME/.aider-pack.json}"
 AIDER_PACK_COMPLETION_SHELL="${AIDER_PACK_COMPLETION_SHELL:=bash}"
 AIDER_PACK_COMPLETION_AUTOREGENERATE="${AIDER_PACK_COMPLETION_AUTOREGENERATE:=true}"
 AIDER_PACK_COMPLETION_FILE="${AIDER_PACK_COMPLETION_FILE:=$HOME/.aider-pack.completion}"
@@ -14,7 +14,7 @@ AIDER_PACK_COMPLETION_FILE="${AIDER_PACK_COMPLETION_FILE:=$HOME/.aider-pack.comp
 AIDER_OPTIONS_CACHE="$HOME/.aider-pack-options-cache"
 
 # Array of predefined models
-MODELS=("gpt-4o" "gpt-4o-mini" "claude-3-5-sonnet-20240620" "openrouter/deepseek/deepseek-coder" "openrouter/google/gemini-pro-1.5" "groq/llama-3.1-70b-versatile" "ollama/qwen2.5-coder:latest" "ollama/qwen2.5:32b")
+AIDER_PACK_MODELS=("gpt-4o" "gpt-4o-mini" "claude-3-5-sonnet-20240620" "openrouter/deepseek/deepseek-coder" "openrouter/google/gemini-pro-1.5" "groq/llama-3.1-70b-versatile" "ollama/qwen2.5-coder:latest" "ollama/qwen2.5:32b")
 
 # Colors for pretty output
 GREEN='\033[0;32m'
@@ -107,10 +107,10 @@ save_pack() {
         --arg env_vars "$env_vars" \
         '{model: $model, editor_model: $editor_model, weak_model: $weak_model, additional_config: $additional_config, env_vars: $env_vars}')
 
-    if [ ! -f "$AIDER_PACKS_CONFIG_FILE" ]; then
-        echo "{\"$pack_name\": $pack_json, \"last_used_pack\": \"$pack_name\"}" >"$AIDER_PACKS_CONFIG_FILE"
+    if [ ! -f "$AIDER_PACK_CONFIG_FILE" ]; then
+        echo "{\"$pack_name\": $pack_json, \"last_used_pack\": \"$pack_name\"}" >"$AIDER_PACK_CONFIG_FILE"
     else
-        jq --arg name "$pack_name" --argjson pack "$pack_json" '.[$name] = $pack' "$AIDER_PACKS_CONFIG_FILE" >"${AIDER_PACKS_CONFIG_FILE}.tmp" && mv "${AIDER_PACKS_CONFIG_FILE}.tmp" "$AIDER_PACKS_CONFIG_FILE"
+        jq --arg name "$pack_name" --argjson pack "$pack_json" '.[$name] = $pack' "$AIDER_PACK_CONFIG_FILE" >"${AIDER_PACK_CONFIG_FILE}.tmp" && mv "${AIDER_PACK_CONFIG_FILE}.tmp" "$AIDER_PACK_CONFIG_FILE"
     fi
 
     if [ "$AIDER_PACK_COMPLETION_AUTOREGENERATE" = "true" ]; then
@@ -121,15 +121,15 @@ save_pack() {
 # Function to delete a pack
 delete_pack() {
     local pack_name=$1
-    if [ -f "$AIDER_PACKS_CONFIG_FILE" ]; then
-        if jq -e ".\"$pack_name\"" "$AIDER_PACKS_CONFIG_FILE" >/dev/null 2>&1; then
-            jq "del(.\"$pack_name\")" "$AIDER_PACKS_CONFIG_FILE" >"${AIDER_PACKS_CONFIG_FILE}.tmp" && mv "${AIDER_PACKS_CONFIG_FILE}.tmp" "$AIDER_PACKS_CONFIG_FILE"
+    if [ -f "$AIDER_PACK_CONFIG_FILE" ]; then
+        if jq -e ".\"$pack_name\"" "$AIDER_PACK_CONFIG_FILE" >/dev/null 2>&1; then
+            jq "del(.\"$pack_name\")" "$AIDER_PACK_CONFIG_FILE" >"${AIDER_PACK_CONFIG_FILE}.tmp" && mv "${AIDER_PACK_CONFIG_FILE}.tmp" "$AIDER_PACK_CONFIG_FILE"
             echo -e "${GREEN}Pack '$pack_name' has been deleted successfully.${NC}"
 
             # Update last_used_pack if the deleted pack was the last used one
-            local last_used=$(jq -r '.last_used_pack // empty' "$AIDER_PACKS_CONFIG_FILE")
+            local last_used=$(jq -r '.last_used_pack // empty' "$AIDER_PACK_CONFIG_FILE")
             if [ "$last_used" = "$pack_name" ]; then
-                jq 'del(.last_used_pack)' "$AIDER_PACKS_CONFIG_FILE" >"${AIDER_PACKS_CONFIG_FILE}.tmp" && mv "${AIDER_PACKS_CONFIG_FILE}.tmp" "$AIDER_PACKS_CONFIG_FILE"
+                jq 'del(.last_used_pack)' "$AIDER_PACK_CONFIG_FILE" >"${AIDER_PACK_CONFIG_FILE}.tmp" && mv "${AIDER_PACK_CONFIG_FILE}.tmp" "$AIDER_PACK_CONFIG_FILE"
             fi
         else
             echo -e "${RED}Pack '$pack_name' not found.${NC}"
@@ -166,8 +166,8 @@ manage_env_vars() {
 execute_pack() {
     local pack_name=$1
     shift # Remove the pack name from the arguments
-    if [ -f "$AIDER_PACKS_CONFIG_FILE" ]; then
-        pack_data=$(jq -r ".[\"$pack_name\"]" "$AIDER_PACKS_CONFIG_FILE")
+    if [ -f "$AIDER_PACK_CONFIG_FILE" ]; then
+        pack_data=$(jq -r ".[\"$pack_name\"]" "$AIDER_PACK_CONFIG_FILE")
         if [ "$pack_data" != "null" ]; then
             model=$(echo "$pack_data" | jq -r '.model')
             editor_model=$(echo "$pack_data" | jq -r '.editor_model')
@@ -181,7 +181,7 @@ execute_pack() {
             fi
 
             # Save the last used pack
-            jq --arg name "$pack_name" '.last_used_pack = $name' "$AIDER_PACKS_CONFIG_FILE" >"${AIDER_PACKS_CONFIG_FILE}.tmp" && mv "${AIDER_PACKS_CONFIG_FILE}.tmp" "$AIDER_PACKS_CONFIG_FILE"
+            jq --arg name "$pack_name" '.last_used_pack = $name' "$AIDER_PACK_CONFIG_FILE" >"${AIDER_PACK_CONFIG_FILE}.tmp" && mv "${AIDER_PACK_CONFIG_FILE}.tmp" "$AIDER_PACK_CONFIG_FILE"
 
             # Construct and execute the aider command
             exec aider --model "$model" --editor-model "$editor_model" --weak-model "$weak_model" $additional_config "$@"
@@ -229,7 +229,7 @@ show_main_menu() {
 list_and_select_packs() {
     while true; do
         clear_the_screen
-        if [ ! -f "$AIDER_PACKS_CONFIG_FILE" ] || [ ! -s "$AIDER_PACKS_CONFIG_FILE" ]; then
+        if [ ! -f "$AIDER_PACK_CONFIG_FILE" ] || [ ! -s "$AIDER_PACK_CONFIG_FILE" ]; then
             echo -e "${YELLOW}No packs found. Please create a new pack.${NC}"
             read -p "Press Enter to return to the main menu..."
             return
@@ -238,7 +238,7 @@ list_and_select_packs() {
         display_header "Existing Packs"
 
         # Read the pack names into the array
-        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE")
+        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE")
 
         local i=1
         for pack in "${packs[@]}"; do
@@ -272,7 +272,7 @@ create_new_pack() {
     sluggified=$(sluggify "$pack_name")
 
     echo -e "\n${YELLOW}Select a main model:${NC}"
-    select model in "${MODELS[@]}"; do
+    select model in "${AIDER_PACK_MODELS[@]}"; do
         if [[ -n $model ]]; then
             break
         else
@@ -281,7 +281,7 @@ create_new_pack() {
     done
 
     echo -e "\n${YELLOW}Select an editor model:${NC}"
-    select editor_model in "${MODELS[@]}"; do
+    select editor_model in "${AIDER_PACK_MODELS[@]}"; do
         if [[ -n $editor_model ]]; then
             break
         else
@@ -290,7 +290,7 @@ create_new_pack() {
     done
 
     echo -e "\n${YELLOW}Select a weak model:${NC}"
-    select weak_model in "${MODELS[@]}"; do
+    select weak_model in "${AIDER_PACK_MODELS[@]}"; do
         if [[ -n $weak_model ]]; then
             break
         else
@@ -332,7 +332,7 @@ create_new_pack() {
 edit_existing_pack() {
     while true; do
         clear_the_screen
-        if [ ! -f "$AIDER_PACKS_CONFIG_FILE" ] || [ ! -s "$AIDER_PACKS_CONFIG_FILE" ]; then
+        if [ ! -f "$AIDER_PACK_CONFIG_FILE" ] || [ ! -s "$AIDER_PACK_CONFIG_FILE" ]; then
             echo -e "${YELLOW}No packs found. Please create a new pack.${NC}"
             read -p "Press Enter to return to the main menu..."
             return
@@ -340,7 +340,7 @@ edit_existing_pack() {
 
         display_header "Edit Existing Pack"
 
-        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE")
+        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE")
 
         echo -e "${YELLOW}Select a pack to edit:${NC}"
         for i in "${!packs[@]}"; do
@@ -365,7 +365,7 @@ edit_existing_pack() {
 # Function to edit a specific pack
 edit_pack() {
     local pack_name=$1
-    local pack_data=$(jq -r ".[\"$pack_name\"]" "$AIDER_PACKS_CONFIG_FILE")
+    local pack_data=$(jq -r ".[\"$pack_name\"]" "$AIDER_PACK_CONFIG_FILE")
     local current_model=$(echo "$pack_data" | jq -r '.model')
     local current_editor_model=$(echo "$pack_data" | jq -r '.editor_model')
     local current_weak_model=$(echo "$pack_data" | jq -r '.weak_model')
@@ -376,7 +376,7 @@ edit_pack() {
     display_header "Edit Pack: $pack_name"
     echo -e "${YELLOW}Current model: $current_model${NC}"
     echo -e "${YELLOW}Select a new model (or press Enter to keep current):${NC}\n"
-    select model in "${MODELS[@]}"; do
+    select model in "${AIDER_PACK_MODELS[@]}"; do
         if [[ -z $REPLY ]]; then
             model=$current_model
             break
@@ -389,7 +389,7 @@ edit_pack() {
 
     echo -e "\n${YELLOW}Current editor model: $current_editor_model${NC}\n"
     echo -e "${YELLOW}Select a new editor model (or press Enter to keep current):${NC}\n"
-    select editor_model in "${MODELS[@]}"; do
+    select editor_model in "${AIDER_PACK_MODELS[@]}"; do
         if [[ -z $REPLY ]]; then
             editor_model=$current_editor_model
             break
@@ -402,7 +402,7 @@ edit_pack() {
 
     echo -e "\n${YELLOW}Current weak model: $current_weak_model${NC}"
     echo -e "${YELLOW}Select a new weak model (or press Enter to keep current):${NC}"
-    select weak_model in "${MODELS[@]}"; do
+    select weak_model in "${AIDER_PACK_MODELS[@]}"; do
         if [[ -z $REPLY ]]; then
             weak_model=$current_weak_model
             break
@@ -450,7 +450,7 @@ edit_pack() {
 delete_existing_pack() {
     while true; do
         clear_the_screen
-        if [ ! -f "$AIDER_PACKS_CONFIG_FILE" ] || [ ! -s "$AIDER_PACKS_CONFIG_FILE" ]; then
+        if [ ! -f "$AIDER_PACK_CONFIG_FILE" ] || [ ! -s "$AIDER_PACK_CONFIG_FILE" ]; then
             echo -e "${YELLOW}No packs found. Please create a new pack.${NC}"
             read -p "Press Enter to return to the main menu..."
             return
@@ -458,7 +458,7 @@ delete_existing_pack() {
 
         display_header "Delete Existing Pack"
 
-        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE")
+        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE")
 
         echo -e "${YELLOW}Select a pack to delete:${NC}"
         for i in "${!packs[@]}"; do
@@ -521,10 +521,10 @@ show_usage() {
     echo "  $0 my-pack --no-auto-commits # Execute 'my-pack' with additional aider option"
     echo
     echo "Available packs:"
-    if [ -f "$AIDER_PACKS_CONFIG_FILE" ] && [ -s "$AIDER_PACKS_CONFIG_FILE" ]; then
+    if [ -f "$AIDER_PACK_CONFIG_FILE" ] && [ -s "$AIDER_PACK_CONFIG_FILE" ]; then
         local packs=()
         local i=1
-        jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | while read -r pack; do
+        jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | while read -r pack; do
             packs+=("$pack")
             echo "  - $pack"
         done
@@ -532,7 +532,7 @@ show_usage() {
             echo "  No packs found. Use the interactive mode to create a pack."
         fi
 
-        last_used_pack=$(jq -r '.last_used_pack // empty' "$AIDER_PACKS_CONFIG_FILE")
+        last_used_pack=$(jq -r '.last_used_pack // empty' "$AIDER_PACK_CONFIG_FILE")
         if [ -n "$last_used_pack" ]; then
             echo
             echo "Last used pack: $last_used_pack"
@@ -566,8 +566,8 @@ suggest_completion_installation() {
 # ==========================================
 
 if [ $# -eq 0 ]; then
-    if [ -f "$AIDER_PACKS_CONFIG_FILE" ]; then
-        last_used_pack=$(jq -r '.last_used_pack // empty' "$AIDER_PACKS_CONFIG_FILE")
+    if [ -f "$AIDER_PACK_CONFIG_FILE" ]; then
+        last_used_pack=$(jq -r '.last_used_pack // empty' "$AIDER_PACK_CONFIG_FILE")
         if [ -n "$last_used_pack" ]; then
             echo -e "${YELLOW}Last used pack: $last_used_pack${NC}"
             read -p "Press Enter to use this pack, or any other key to go to the main menu: " choice
@@ -579,10 +579,10 @@ if [ $# -eq 0 ]; then
     show_main_menu
 elif [ "$1" == "--completions" ]; then
     if [ "$2" == "bash" ]; then
-        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | tr '\n' ' ')
+        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | tr '\n' ' ')
         echo "complete -W \"$packs\" aider-pack"
     elif [ "$2" == "zsh" ]; then
-        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | tr '\n' ' ')
+        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | tr '\n' ' ')
         echo "compdef _aider-pack aider-pack"
         echo "_aider-pack() { compadd $packs }"
     else
@@ -608,10 +608,10 @@ else
 fi
 regenerate_completion_file() {
     if [ "$AIDER_PACK_COMPLETION_SHELL" = "bash" ]; then
-        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | tr '\n' ' ')
+        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | tr '\n' ' ')
         echo "complete -W \"$packs\" aider-pack" >"$AIDER_PACK_COMPLETION_FILE"
     elif [ "$AIDER_PACK_COMPLETION_SHELL" = "zsh" ]; then
-        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | tr '\n' ' ')
+        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | tr '\n' ' ')
         echo "compdef _aider-pack aider-pack" >"$AIDER_PACK_COMPLETION_FILE"
         echo "_aider-pack() { compadd $packs }" >>"$AIDER_PACK_COMPLETION_FILE"
     else

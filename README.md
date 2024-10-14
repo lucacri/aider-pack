@@ -59,7 +59,7 @@ To execute a specific pack with additional options:
 
 The script uses a JSON file located at `~/.aider-pack.json` to store pack configurations. This file is automatically managed by the script.
 
-
+You can customize the list of available models by setting the environment variable `AIDER_PACK_MODELS`.
 
 ## Contributing
 
