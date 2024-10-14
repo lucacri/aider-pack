@@ -195,15 +195,17 @@ show_main_menu() {
         echo -e "2. ${YELLOW}Create${NC} a new pack"
         echo -e "3. ${YELLOW}Edit${NC} an existing pack"
         echo -e "4. ${YELLOW}Delete${NC} an existing pack"
-        echo -e "5. ${YELLOW}Exit${NC}"
+        echo -e "5. ${YELLOW}Show${NC} pack details"
+        echo -e "6. ${YELLOW}Exit${NC}"
         echo
-        read -p "Enter your choice (1-5): " choice
+        read -p "Enter your choice (1-6): " choice
         case $choice in
         1) list_and_select_packs ;;
         2) create_new_pack ;;
         3) edit_existing_pack ;;
         4) delete_existing_pack ;;
-        5) exit 0 ;;
+        5) show_pack_details ;;
+        6) exit 0 ;;
         *)
             echo -e "${RED}Invalid choice. Please try again.${NC}"
             sleep 2
@@ -478,6 +480,61 @@ delete_existing_pack() {
             sleep 2
         fi
     done
+}
+
+# Function to show pack details
+show_pack_details() {
+    while true; do
+        clear_the_screen
+        if [ ! -f "$AIDER_PACK_CONFIG_FILE" ] || [ ! -s "$AIDER_PACK_CONFIG_FILE" ]; then
+            echo -e "${YELLOW}No packs found. Please create a new pack.${NC}"
+            read -p "Press Enter to return to the main menu..."
+            return
+        fi
+
+        display_header "Show Pack Details"
+
+        mapfile -t packs < <(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE")
+
+        echo -e "${YELLOW}Select a pack to view details:${NC}"
+        for i in "${!packs[@]}"; do
+            echo "$((i + 1)). ${packs[i]}"
+        done
+        echo "$((${#packs[@]} + 1)). Back to main menu"
+
+        read -p "Enter your choice (1-$((${#packs[@]} + 1))): " choice
+        if validate_input "$choice" 1 $((${#packs[@]} + 1)); then
+            if [ "$choice" -eq "$((${#packs[@]} + 1))" ]; then
+                return
+            else
+                display_pack_details "${packs[$((choice - 1))]}"
+            fi
+        else
+            echo -e "${RED}Invalid selection. Please try again.${NC}"
+            sleep 2
+        fi
+    done
+}
+
+# Function to display details of a specific pack
+display_pack_details() {
+    local pack_name=$1
+    local pack_data=$(jq -r ".[\"$pack_name\"]" "$AIDER_PACK_CONFIG_FILE")
+    local model=$(echo "$pack_data" | jq -r '.model')
+    local editor_model=$(echo "$pack_data" | jq -r '.editor_model')
+    local weak_model=$(echo "$pack_data" | jq -r '.weak_model')
+    local additional_config=$(echo "$pack_data" | jq -r '.additional_config')
+    local env_vars=$(echo "$pack_data" | jq -r '.env_vars')
+
+    clear_the_screen
+    display_header "Pack Details: $pack_name"
+    echo -e "Model:                       ${GREEN}$model${NC}"
+    echo -e "Editor model:                ${GREEN}$editor_model${NC}"
+    echo -e "Weak model:                  ${GREEN}$weak_model${NC}"
+    echo -e "Additional config:           ${GREEN}$additional_config${NC}"
+    echo -e "Environment variables:       ${GREEN}$env_vars${NC}"
+    echo
+    read -p "Press Enter to continue..."
 }
 
 # ==========================================
