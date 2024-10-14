@@ -225,17 +225,19 @@ list_and_select_packs() {
         display_header "Existing Packs"
 
         local packs=()
+        packCount=0
 
         # Read the pack names into the array
         jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACK_CONFIG_FILE" | while read -r pack; do
             packs+=("$pack")
             echo "$((i++)). $pack"
+            
+            ((packCount++))
         done
 
+        echo -e "\nB. Back to main menu\n"
 
-        echo "B. Back to main menu"
-
-        read -p "Enter your choice (1-${#packs[@]} or B): " choice
+        read -p "Enter your choice (1-$packCount or B): " choice
         if validate_input "$choice" 1 ${#packs[@]} || [[ "$choice" =~ ^[bB]$ ]]; then
             if [[ "$choice" =~ ^[bB]$ ]]; then
                 show_main_menu
