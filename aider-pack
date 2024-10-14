@@ -555,10 +555,12 @@ if [ $# -eq 0 ]; then
     show_main_menu
 elif [ "$1" == "--completions" ]; then
     if [ "$2" == "bash" ]; then
-        echo 'complete -W "$(aider-pack --list-packs)" aider-pack'
+        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | tr '\n' ' ')
+        echo "complete -W \"$packs\" aider-pack"
     elif [ "$2" == "zsh" ]; then
-        echo 'compdef _aider-pack aider-pack'
-        echo '_aider-pack() { compadd $(aider-pack --list-packs) }'
+        packs=$(jq -r 'keys[] | select(. != "last_used_pack")' "$AIDER_PACKS_CONFIG_FILE" | tr '\n' ' ')
+        echo "compdef _aider-pack aider-pack"
+        echo "_aider-pack() { compadd $packs }"
     else
         echo "Invalid shell type. Use 'bash' or 'zsh'."
         exit 1
