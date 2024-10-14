@@ -27,43 +27,19 @@ To get started with the Aider Pack Manager, follow these steps:
    ```
 
 3. **(Optional) Install Shell Completion**:
-   - For **Bash**:
-     - **Linux**:
+   To enable shell completion, follow these steps:
 
-       ```bash
-       sudo cp aider-pack-completion.bash /etc/bash_completion.d/aider-pack
-       source /etc/bash_completion.d/aider-pack
-       ```
+   For **Bash**:
+   1. Add the following line to your ~/.bashrc file:
+      eval "$(aider-pack --completions bash)"
+   2. Restart your shell or run:
+      source ~/.bashrc
 
-     - **macOS**:
-
-       ```bash
-       mkdir -p ~/.bash_completion.d
-       cp aider-pack-completion.bash ~/.bash_completion.d/aider-pack
-       echo "if [ -f ~/.bash_completion.d/aider-pack ]; then" >> ~/.bash_profile
-       echo "  . ~/.bash_completion.d/aider-pack" >> ~/.bash_profile
-       echo "fi" >> ~/.bash_profile
-       source ~/.bash_profile
-       ```
-
-   - For **Zsh**:
-     - **Linux**:
-
-       ```bash
-       sudo cp aider-pack-completion.bash /usr/local/share/zsh/site-functions/_aider-pack
-       echo "autoload -U compinit && compinit" >> ~/.zshrc
-       source ~/.zshrc
-       ```
-
-     - **macOS**:
-
-       ```bash
-       mkdir -p ~/.zsh/completion
-       cp aider-pack-completion.bash ~/.zsh/completion/_aider-pack
-       echo "fpath=(~/.zsh/completion $fpath)" >> ~/.zshrc
-       echo "autoload -U compinit && compinit" >> ~/.zshrc
-       source ~/.zshrc
-       ```
+   For **Zsh**:
+   1. Add the following line to your ~/.zshrc file:
+      eval "$(aider-pack --completions zsh)"
+   2. Restart your shell or run:
+      source ~/.zshrc
 
 ## Usage
 
