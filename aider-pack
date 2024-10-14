@@ -563,6 +563,17 @@ elif [ "$1" == "--completions" ]; then
         exit 1
     fi
     exit 0
+elif [ "$1" == "--completions" ]; then
+    if [ "$2" == "bash" ]; then
+        echo 'complete -W "$(aider-pack --list-packs)" aider-pack'
+    elif [ "$2" == "zsh" ]; then
+        echo 'compdef _aider-pack aider-pack'
+        echo '_aider-pack() { compadd $(aider-pack --list-packs) }'
+    else
+        echo "Invalid shell type. Use 'bash' or 'zsh'."
+        exit 1
+    fi
+    exit 0
 elif [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
     show_usage
 else
