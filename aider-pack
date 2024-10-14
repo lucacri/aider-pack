@@ -343,9 +343,9 @@ edit_existing_pack() {
         done
         echo "$((${#packs[@]} + 1)). Back to main menu"
 
-        read -p "Enter your choice (1-$((${#packs[@]} + 1))): " choice
-        if validate_input "$choice" 1 $((${#packs[@]} + 1)); then
-            if [ "$choice" -eq "$((${#packs[@]} + 1))" ]; then
+        read -p "Enter your choice (1-$((${#packs[@]} + 1)) or B): " choice
+        if validate_input "$choice" 1 $((${#packs[@]} + 1)) || [[ "$choice" =~ ^[bB]$ ]]; then
+            if [ "$choice" -eq "$((${#packs[@]} + 1))" ] || [[ "$choice" =~ ^[bB]$ ]]; then
                 return
             else
                 edit_pack "${packs[$((choice - 1))]}"
@@ -461,9 +461,9 @@ delete_existing_pack() {
         done
         echo "$((${#packs[@]} + 1)). Back to main menu"
 
-        read -p "Enter your choice (1-$((${#packs[@]} + 1))): " choice
-        if validate_input "$choice" 1 $((${#packs[@]} + 1)); then
-            if [ "$choice" -eq "$((${#packs[@]} + 1))" ]; then
+        read -p "Enter your choice (1-$((${#packs[@]} + 1)) or B): " choice
+        if validate_input "$choice" 1 $((${#packs[@]} + 1)) || [[ "$choice" =~ ^[bB]$ ]]; then
+            if [ "$choice" -eq "$((${#packs[@]} + 1))" ] || [[ "$choice" =~ ^[bB]$ ]]; then
                 return
             else
                 local pack_to_delete="${packs[$((choice - 1))]}"
@@ -503,9 +503,9 @@ show_pack_details() {
         done
         echo "$((pack_count + 1)). Back to main menu"
 
-        read -p "Enter your choice (1-$((pack_count + 1))): " choice
-        if validate_input "$choice" 1 $((pack_count + 1)); then
-            if [ "$choice" -eq "$((pack_count + 1))" ]; then
+        read -p "Enter your choice (1-$((pack_count + 1)) or B): " choice
+        if validate_input "$choice" 1 $((pack_count + 1)) || [[ "$choice" =~ ^[bB]$ ]]; then
+            if [ "$choice" -eq "$((pack_count + 1))" ] || [[ "$choice" =~ ^[bB]$ ]]; then
                 return
             else
                 display_pack_details "${packs[$((choice - 1))]}"
