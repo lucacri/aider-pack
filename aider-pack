@@ -14,7 +14,7 @@ AIDER_PACK_COMPLETION_FILE="${AIDER_PACK_COMPLETION_FILE:=$HOME/.aider-pack.comp
 AIDER_OPTIONS_CACHE="$HOME/.aider-pack-options-cache"
 
 # Array of predefined models
-AIDER_PACK_MODELS=("gpt-4o" "gpt-4o-mini" "claude-3-5-sonnet-20240620" "openrouter/deepseek/deepseek-coder" "openrouter/google/gemini-pro-1.5" "groq/llama-3.1-70b-versatile" "ollama/qwen2.5-coder:latest" "ollama/qwen2.5:32b")
+AIDER_PACK_MODELS=("gpt-4o" "gpt-4o-mini" "claude-3-5-sonnet-20241022" "openrouter/deepseek/deepseek-coder" "openrouter/google/gemini-pro-1.5" "openrouter/google/gemini-flash-1.5" "groq/llama-3.1-70b-versatile" "ollama/qwen2.5-coder:latest" "ollama/qwen2.5:32b")
 
 # Colors for pretty output
 GREEN='\033[0;32m'
