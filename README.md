@@ -31,7 +31,23 @@ To get started with the Aider Pack, follow these steps:
    chmod +x aider-pack
    ```
 
-3. **(Optional) Install Shell Completion**:
+3. **Copy the Executable**:
+
+   For **macOS**:
+
+   ```bash
+   sudo cp aider-pack /usr/local/bin/
+   ```
+
+   For **Linux**:
+
+   ```bash
+   sudo cp aider-pack /usr/local/bin/
+   ```
+
+   Note: This makes the `aider-pack` command available system-wide. You may need to enter your password.
+
+4. **(Optional) Install Shell Completion**:
    To enable shell completion, follow these steps:
 
    For **Bash**:
